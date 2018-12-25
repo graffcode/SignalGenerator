@@ -1,3 +1,153 @@
+/* Parameters that need to be set in the main function to properly use this include file :
+   1)TFT_H and TFT_W
+   2)Definitions of different data types.
+   
+     typedef char                     Schar;
+     typedef unsigned char            Uchar;
+     typedef const char               CSchar;
+     typedef const unsigned char      CUchar;
+     typedef int                      Sint; 
+     typedef unsigned int             Uint;
+     typedef const unsigned int       CUint;
+    3)
+
+
+void TFT_Reset(void) //reset the display
+{
+	TFT_CS = 1;
+	TFT_RES = 0; __delay_ms(50);
+	TFT_RES = 1; __delay_ms(150);
+}
+
+void TFT_WriteCommand(Uchar command)
+{
+	TFT_CS = 0;
+	TFT_DC = 0; // When DCX = 0 , command is selected;
+	SPI_Write(command);
+	TFT_CS = 1;
+}
+
+void TFT_WriteParameter(Uchar parameter)
+{
+	TFT_CS = 0;
+	TFT_DC = 1; //Data is selected;
+	SPI_Write(parameter);
+	TFT_CS = 1;
+}
+
+void TFT_init(void)
+{
+	//set pins logic levels;
+	TFT_Reset();
+	TFT_WriteCommand(0xCB);   // Power control A (CBh)
+TFT_WriteParameter(0x39); 
+TFT_WriteParameter(0x2C); 
+TFT_WriteParameter(0x00); 
+TFT_WriteParameter(0x34); 
+TFT_WriteParameter(0x02); 
+
+TFT_WriteCommand(0xCF);   // Power control B (CFh)
+TFT_WriteParameter(0x00); 
+TFT_WriteParameter(0XC1); 
+TFT_WriteParameter(0X30); 
+
+TFT_WriteCommand(0xE8);   // Driver timing control A (E8h)  
+TFT_WriteParameter(0x85); 
+TFT_WriteParameter(0x00); 
+TFT_WriteParameter(0x78); 
+
+TFT_WriteCommand(0xEA);   // Driver timing control B (EAh)  
+TFT_WriteParameter(0x00); 
+TFT_WriteParameter(0x00); 
+
+TFT_WriteCommand(0xED);   // Power on sequence control (EDh) 
+TFT_WriteParameter(0x64); 
+TFT_WriteParameter(0x03); 
+TFT_WriteParameter(0X12); 
+TFT_WriteParameter(0X81); 
+
+TFT_WriteCommand(0xF7);   // Pump ratio control (F7h)
+TFT_WriteParameter(0x20); 
+
+TFT_WriteCommand(0xC0);   // Power Control 1 (C0h) 
+TFT_WriteParameter(0x23); // VRH[5:0] 
+
+TFT_WriteCommand(0xC1);   // Power Control 2 (C1h)
+TFT_WriteParameter(0x10); // SAP[2:0]; BT[3:0] 
+
+TFT_WriteCommand(0xC5);   // Set the VCOMH voltage. 
+TFT_WriteParameter(0x3E);
+TFT_WriteParameter(0x28); 
+
+TFT_WriteCommand(0xC7);   // VCOM Control 2(C7h)
+TFT_WriteParameter(0x86);  
+
+TFT_WriteCommand(0x36);   // Memory Access Control (36h)
+TFT_WriteParameter(TFT_HORIZONTAL);
+
+TFT_WriteCommand(0x3A);   // COLMOD: Pixel Format Set (3Ah)    
+TFT_WriteParameter(0x55); 
+
+TFT_WriteCommand(0xB1);   // Frame Rate Control (In Normal Mode/Full Colors) (B1h)  
+TFT_WriteParameter(0x00);  
+TFT_WriteParameter(0x18); 
+
+TFT_WriteCommand(0xB6);   // Display Function Control (B6h) 
+TFT_WriteParameter(0x08); 
+TFT_WriteParameter(0x82);
+TFT_WriteParameter(0x27);  
+
+TFT_WriteCommand(0xF2);   // Enable 3G (F2h)
+TFT_WriteParameter(0x00); 
+
+TFT_WriteCommand(0x26);   // Gamma Set (26h)
+TFT_WriteParameter(0x01); 
+
+TFT_WriteCommand(0xE0);   //Positive Gamma Correction (E0h)
+TFT_WriteParameter(0x0F); 
+TFT_WriteParameter(0x31); 
+TFT_WriteParameter(0x2B); 
+TFT_WriteParameter(0x0C); 
+TFT_WriteParameter(0x0E); 
+TFT_WriteParameter(0x08); 
+TFT_WriteParameter(0x4E); 
+TFT_WriteParameter(0xF1); 
+TFT_WriteParameter(0x37); 
+TFT_WriteParameter(0x07); 
+TFT_WriteParameter(0x10); 
+TFT_WriteParameter(0x03); 
+TFT_WriteParameter(0x0E); 
+TFT_WriteParameter(0x09); 
+TFT_WriteParameter(0x00); 
+
+TFT_WriteCommand(0XE1);   // Negative Gamma Correction (E1h)
+TFT_WriteParameter(0x00); 
+TFT_WriteParameter(0x0E); 
+TFT_WriteParameter(0x14); 
+TFT_WriteParameter(0x03); 
+TFT_WriteParameter(0x11); 
+TFT_WriteParameter(0x07); 
+TFT_WriteParameter(0x31); 
+TFT_WriteParameter(0xC1); 
+TFT_WriteParameter(0x48); 
+TFT_WriteParameter(0x08); 
+TFT_WriteParameter(0x0F); 
+TFT_WriteParameter(0x0C); 
+TFT_WriteParameter(0x31); 
+TFT_WriteParameter(0x36); 
+TFT_WriteParameter(0x0F); 
+
+TFT_WriteCommand(0x11);   // Exit Sleep
+//__delay_ms(150);            // Delay of 150ms
+TFT_WriteCommand(0x29);   // Display ON (29h)
+TFT_FillScreen(BLACK);
+
+
+TFT_SetDotSize(1);
+   
+TFT_SetFont(Courier_New_Bold_20, 1);
+}
+
 void TFT_ColumnPage(Uint x1, Uint x2, Uint y1, Uint y2)
 {      
   TFT_CS = 0;
